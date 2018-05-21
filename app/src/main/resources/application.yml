@@ -1,0 +1,27 @@
+# YAML files cannot be loaded by using the @PropertySource annotation. 
+# So, in the case that you need to load values that way, you need to use a properties file.
+spring:
+    h2:
+        console: 
+            enabled: true
+            path: /h2
+    # datasource:
+    #     url: "jdbc:h2:D:/testdb/db"
+    #     driver-class-name: org.h2.Driver
+    #     username: sa
+    #     password: ""
+    # jpa:
+    #     show-sql: false
+    #     database-platform: org.hibernate.dialect.H2Dialect
+    #     hibernate:
+    #         ddl-auto: update
+            
+    messages:
+        basename: validation
+    mvc:
+        view:
+            prefix: /
+            suffix: .jsp
+    
+server:
+    port: 8080 
