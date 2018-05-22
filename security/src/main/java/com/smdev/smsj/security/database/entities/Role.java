@@ -1,5 +1,6 @@
 package com.smdev.smsj.security.database.entities;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -24,7 +25,6 @@ import lombok.Setter;
  */
 @Entity(name = "ROLE")
 @Table(name = "roles")
-@NoArgsConstructor
 public class Role extends AbstractEntityClass {
 
 	@Getter
@@ -39,8 +39,13 @@ public class Role extends AbstractEntityClass {
 	@Setter
 	private Set<Permission> permissions;
 
+	public Role() {
+		this("");
+	}
+	
 	public Role(String rolename) {
 		this.name = rolename;
+		this.permissions = new HashSet<Permission>();
 	}
 
 	/**

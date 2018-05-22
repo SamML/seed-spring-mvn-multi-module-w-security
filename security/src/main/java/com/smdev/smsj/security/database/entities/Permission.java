@@ -21,7 +21,6 @@ import lombok.Setter;
  */
 @Entity(name="PERMISSION")
 @Table(name="permissions")
-@NoArgsConstructor
 public class Permission extends AbstractEntityClass{
 
 	@Getter @Setter
@@ -30,6 +29,10 @@ public class Permission extends AbstractEntityClass{
 	
 	@ManyToMany (mappedBy="permissions")
 	private Set<Role> roles;
+	
+	public Permission() {
+		this("");
+	}
 	
 	public Permission(String name) {
 		this.name = name;

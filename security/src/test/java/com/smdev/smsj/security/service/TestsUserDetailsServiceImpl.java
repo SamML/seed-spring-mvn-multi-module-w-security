@@ -28,6 +28,8 @@ import com.smdev.smsj.security.database.entities.Permission;
 import com.smdev.smsj.security.database.entities.Role;
 import com.smdev.smsj.security.database.entities.User;
 
+import com.smdev.smsj.security.model.UserAdapter;
+
 /**
  * @author sm, in 2018
  *
@@ -69,10 +71,12 @@ public class TestsUserDetailsServiceImpl {
 		// call
 		UserDetails result = userDetailsServiceImpl.loadUserByUsername(anyString());
 		UserDetails compareto = org.springframework.security.core.userdetails.User.withUsername("Juan").password("pass")
-				.roles("ADMIN","USER").authorities("WRITE_FILES").build();
+				.authorities("ROLE_ADMIN","ROLE_USER", "WRITE_FILES").build();
 
 		// check
 		assertEquals(result.getUsername(), compareto.getUsername());
-//		assertEquals(result.getAuthorities(), compareto.getAuthorities());
+		
+		assertEquals(result.getAuthorities(), compareto.getAuthorities());
+		
 	}
 }

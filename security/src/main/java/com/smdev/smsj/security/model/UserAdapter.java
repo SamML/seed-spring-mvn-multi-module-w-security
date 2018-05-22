@@ -34,9 +34,12 @@ public class UserAdapter implements UserDetails, Serializable {
 		Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 		for (Role r : user.getRoles()) {
 			authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + r.getName()));
-			for (Permission p : r.getPermissions()) {
-				authorities.add(new PermissionAdapter(p));
+			if (r.getPermissions().size() > 0) {
+				for (Permission p : r.getPermissions()) {
+					authorities.add(new SimpleGrantedAuthority(p.getName()));
+				}
 			}
+			
 
 		}
 
