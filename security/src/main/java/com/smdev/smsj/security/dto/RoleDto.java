@@ -16,4 +16,6 @@ public class RoleDto {
 	@Getter
 	@Setter
 	private String name;
+	
+	
 }

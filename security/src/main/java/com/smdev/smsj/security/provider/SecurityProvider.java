@@ -1,5 +1,6 @@
 package com.smdev.smsj.security.provider;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +31,10 @@ public class SecurityProvider implements ISecurityProvider {
 	private final RoleRepository roleRepository;
 	private final PermissionRepository permissionRepository;
 	private final ModelMapper modelMapper;
+	
+	private static final String ROLE_PREFIX = "ROLE_";
+	private static final String DEFAULT_ROLE = "DEFAULT";
+	
 
 	@Autowired
 	public SecurityProvider(UserRepository userRepository, RoleRepository roleRepository,
@@ -48,10 +53,14 @@ public class SecurityProvider implements ISecurityProvider {
 			throw new AlreadyExistsException(UserDto.class);
 
 		}
-
-		userRepository.save(modelMapper.map(userdto, User.class));
+		Set<Role> defaultroles = new HashSet<Role>(Arrays
+				.asList(new Role(DEFAULT_ROLE, new HashSet<Permission>(Arrays.asList(new Permission(ROLE_PREFIX+DEFAULT_ROLE))))));
+		User newuser = modelMapper.map(userdto, User.class);
+		newuser.setRoles(defaultroles);
+		userRepository.save(newuser);
 		return userdto;
 	}
+
 	@Override
 	public UserDto createUserIfNotExists(UserDto userdto, Set<RoleDto> rolesdto) throws AlreadyExistsException {
 
@@ -62,33 +71,38 @@ public class SecurityProvider implements ISecurityProvider {
 		}
 		User newuser = modelMapper.map(userdto, User.class);
 		Set<Role> roles = new HashSet<Role>();
-		for(RoleDto rdto : rolesdto) {
+		for (RoleDto rdto : rolesdto) {
 			roles.add(modelMapper.map(rdto, Role.class));
 		}
 		newuser.setRoles(roles);
-		
+
 		userRepository.save(newuser);
 		return userdto;
 	}
-	
+
 	@Override
 	public RoleDto createRoleIfNotExists(RoleDto roledto) throws AlreadyExistsException {
 		if (roleRepository.findOneByName(roledto.getName()).isPresent()) {
 			throw new AlreadyExistsException(RoleDto.class);
 		}
 
-		roleRepository.save(modelMapper.map(roledto, Role.class));
+		Set<Permission> defaultpermissions = new HashSet<Permission>();
+		Role newrole = modelMapper.map(roledto, Role.class);
+		newrole.setPermissions(defaultpermissions);
+		roleRepository.save(newrole);
 		return roledto;
 	}
 
 	@Override
-	public RoleDto createRoleIfNotExists(RoleDto roledto, Set<PermissionDto> permissionsdto) throws AlreadyExistsException {
+	public RoleDto createRoleIfNotExists(RoleDto roledto, Set<PermissionDto> permissionsdto)
+			throws AlreadyExistsException {
 		if (roleRepository.findOneByName(roledto.getName()).isPresent()) {
 			throw new AlreadyExistsException(RoleDto.class);
 		}
 		Role newrole = modelMapper.map(roledto, Role.class);
 		Set<Permission> permissions = new HashSet<Permission>();
-		for(PermissionDto pdto : permissionsdto) {
+		for (PermissionDto pdto : permissionsdto) {
+			// createPermissionIfNotExists(pdto);
 			permissions.add(modelMapper.map(pdto, Permission.class));
 		}
 		newrole.setPermissions(permissions);

@@ -55,28 +55,25 @@ public class TestsUserDetailsServiceImpl {
 		Set<Permission> onepermissions = new HashSet<Permission>();
 		Permission onepermission = new Permission("WRITE_FILES");
 		onepermissions.add(onepermission);
-		
+
 		Set<Role> oneroles = new HashSet<Role>();
 		Role roleone = new Role("ADMIN", onepermissions);
 		Role roletwo = new Role("USER");
 		oneroles.add(roleone);
 		oneroles.add(roletwo);
 
-		
-		
-		
 		Optional<User> oneuser = Optional.of(new User("Juan", "pass", oneroles));
 
 		when(userRepository.findOneByUsername(anyString())).thenReturn(oneuser);
 		// call
 		UserDetails result = userDetailsServiceImpl.loadUserByUsername(anyString());
 		UserDetails compareto = org.springframework.security.core.userdetails.User.withUsername("Juan").password("pass")
-				.authorities("ROLE_ADMIN","ROLE_USER", "WRITE_FILES").build();
+				.authorities("ROLE_ADMIN", "ROLE_USER", "WRITE_FILES").build();
 
 		// check
 		assertEquals(result.getUsername(), compareto.getUsername());
-		
+
 		assertEquals(result.getAuthorities(), compareto.getAuthorities());
-		
+
 	}
 }

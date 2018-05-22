@@ -53,7 +53,7 @@ public class SecurityDatasourceConfig {
 		return em;
 	}
 
-	@Bean(name = "securityDataSource")
+	@Bean("securityDataSource")
 	public DataSource securityDataSource() {
 
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();

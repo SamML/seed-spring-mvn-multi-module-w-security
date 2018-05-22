@@ -10,7 +10,6 @@ import javax.persistence.Table;
 import com.smdev.common.database.AbstractEntityClass;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
