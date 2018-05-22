@@ -58,6 +58,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	//@formatter:off
       auth.userDetailsService(userDetailsService)
         .and().jdbcAuthentication().dataSource(securityDataSource);
+      
+      
   // @formatter:on
 	}
 
@@ -77,7 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
               .logoutSuccessHandler(logoutSuccessfulHandler)
           .and()
             .authorizeRequests()
-            .antMatchers("/auth/login", "/h2**").permitAll()
+            .antMatchers("/auth/login", "/h2**", "/", "/index.html").permitAll()
             .antMatchers("/secure/admin").access("hasRole('ADMIN')")//.access("hasAuthority('ROLE_ADMIN')")
             .anyRequest().authenticated()
            .and()
@@ -86,6 +88,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .and()
             .anonymous()
               .disable();
+      
+      
   // @formatter:on
 	}
 

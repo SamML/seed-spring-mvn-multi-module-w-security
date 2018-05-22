@@ -27,7 +27,13 @@ public class Permission extends AbstractEntityClass{
 	@Getter @Setter
 	@Column(name="name")
 	private String name;
+	
 	@ManyToMany (mappedBy="permissions")
 	private Set<Role> roles;
+	
+	public Permission(String name) {
+		this.name = name;
+	}
+	
 }
 

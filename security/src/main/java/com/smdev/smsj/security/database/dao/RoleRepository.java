@@ -3,6 +3,7 @@ package com.smdev.smsj.security.database.dao;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.smdev.smsj.security.database.entities.Role;
 
@@ -12,6 +13,7 @@ import com.smdev.smsj.security.database.entities.Role;
  * |> RoleRepository ~~ [com.smdev.smsj.security.database.dao]
  * 
  */
+@Repository("roleRepository")
 public interface RoleRepository extends JpaRepository<Role, String>{
 	Optional<Role> findOneByName(String name);
 }

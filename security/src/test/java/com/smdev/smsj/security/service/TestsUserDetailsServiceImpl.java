@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
@@ -30,43 +31,48 @@ import com.smdev.smsj.security.database.entities.User;
 /**
  * @author sm, in 2018
  *
- * |> UserDetailsServiceImplTests ~~ [security]
+ *         |> UserDetailsServiceImplTests ~~ [security]
  * 
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TestsUserDetailsServiceImpl {
 
 	private UserDetailsServiceImpl userDetailsServiceImpl;
-	
+
 	@Mock
 	private UserRepository userRepository;
-	
+
 	@Before
 	public void setUp() {
 		this.userDetailsServiceImpl = new UserDetailsServiceImpl(userRepository);
 	}
-	
+
 	@Test
 	public void loadUserByUsernameTest() {
-		//set up data
-		
-		Set<Role> oneroles = new HashSet<Role>();
-		oneroles.add(new Role("ADMIN"));
-		oneroles.add(new Role("USER"));
-		
+		// set up data
 		Set<Permission> onepermissions = new HashSet<Permission>();
-		Permission onepermission = new Permission();
-		onepermission.setName("ADMINPERMISSION");
+		Permission onepermission = new Permission("WRITE_FILES");
 		onepermissions.add(onepermission);
 		
-		Optional<User> oneuser = Optional.of(new User("Juan", "pass", oneroles));
-			
-		 when(userRepository.findOneByUsername(anyString())).thenReturn(oneuser);
-		//call
-		UserDetails result = userDetailsServiceImpl.loadUserByUsername(anyString()); 
-	
-		//check
-		assertEquals(result.getUsername(), "Juan" );
-	}
+		Set<Role> oneroles = new HashSet<Role>();
+		Role roleone = new Role("ADMIN", onepermissions);
+		Role roletwo = new Role("USER");
+		oneroles.add(roleone);
+		oneroles.add(roletwo);
 
+		
+		
+		
+		Optional<User> oneuser = Optional.of(new User("Juan", "pass", oneroles));
+
+		when(userRepository.findOneByUsername(anyString())).thenReturn(oneuser);
+		// call
+		UserDetails result = userDetailsServiceImpl.loadUserByUsername(anyString());
+		UserDetails compareto = org.springframework.security.core.userdetails.User.withUsername("Juan").password("pass")
+				.roles("ADMIN","USER").authorities("WRITE_FILES").build();
+
+		// check
+		assertEquals(result.getUsername(), compareto.getUsername());
+//		assertEquals(result.getAuthorities(), compareto.getAuthorities());
+	}
 }

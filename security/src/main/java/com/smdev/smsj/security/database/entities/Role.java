@@ -19,7 +19,7 @@ import lombok.Setter;
 /**
  * @author sm, in 2018
  *
- * |> Role ~~ [com.smdev.smsj.security.database.entities]
+ *         |> Role ~~ [com.smdev.smsj.security.database.entities]
  * 
  */
 @Entity(name = "ROLE")
@@ -35,10 +35,20 @@ public class Role extends AbstractEntityClass {
 	private Set<User> users;
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "role_permission", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
-	@Getter @Setter
+	@Getter
+	@Setter
 	private Set<Permission> permissions;
-	
+
 	public Role(String rolename) {
 		this.name = rolename;
+	}
+
+	/**
+	 * @param string
+	 * @param onepermissions
+	 */
+	public Role(String rolename, Set<Permission> permissions) {
+		this.name = rolename;
+		this.permissions = permissions;
 	}
 }
