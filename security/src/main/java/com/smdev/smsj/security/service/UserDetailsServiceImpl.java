@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 import com.smdev.smsj.security.database.dao.UserRepository;
 import com.smdev.smsj.security.model.UserAdapter;
@@ -14,6 +15,7 @@ import com.smdev.smsj.security.model.UserAdapter;
  *         |> UserDetailsServiceImpl ~~ [com.smdev.smsj.security.service]
  * 
  */
+@Service("userDetailsServiceImpl")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
 	private final UserRepository userRepository;

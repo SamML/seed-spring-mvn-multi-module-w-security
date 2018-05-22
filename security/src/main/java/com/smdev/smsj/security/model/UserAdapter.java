@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.smdev.smsj.security.database.entities.Permission;
@@ -21,6 +22,7 @@ import com.smdev.smsj.security.database.entities.User;
 public class UserAdapter implements UserDetails, Serializable {
 
 	private static final long serialVersionUID = -6395683343329167936L;
+	private static final String ROLE_PREFIX = "ROLE_";
 	private User user;
 
 	public UserAdapter (User user) {
@@ -31,6 +33,7 @@ public class UserAdapter implements UserDetails, Serializable {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 		for (Role r : user.getRoles()) {
+			authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + r.getName()));
 			for (Permission p : r.getPermissions()) {
 				authorities.add(new PermissionAdapter(p));
 			}

@@ -1,5 +1,7 @@
 package com.smdev.smsj.security.database.dao;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.smdev.smsj.security.database.entities.Role;
@@ -11,5 +13,5 @@ import com.smdev.smsj.security.database.entities.Role;
  * 
  */
 public interface RoleRepository extends JpaRepository<Role, String>{
-
+	Optional<Role> findOneByName(String name);
 }
