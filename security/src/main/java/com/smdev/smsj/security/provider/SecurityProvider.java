@@ -2,7 +2,9 @@ package com.smdev.smsj.security.provider;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +33,9 @@ public class SecurityProvider implements ISecurityProvider {
 	private final RoleRepository roleRepository;
 	private final PermissionRepository permissionRepository;
 	private final ModelMapper modelMapper;
-	
+
 	private static final String ROLE_PREFIX = "ROLE_";
 	private static final String DEFAULT_ROLE = "DEFAULT";
-	
 
 	@Autowired
 	public SecurityProvider(UserRepository userRepository, RoleRepository roleRepository,
@@ -46,77 +47,143 @@ public class SecurityProvider implements ISecurityProvider {
 	}
 
 	@Override
-	public UserDto createUserIfNotExists(UserDto userdto) throws AlreadyExistsException {
+	public UserDto createUserIfNotExists(UserDto userdto)
+			throws AlreadyExistsException, RequiredFieldNotGivenException {
 
+		// Check if DTO has required fields
+		if (userdto.getUsername() == null || userdto.getUsername().isEmpty()) {
+			throw new RequiredFieldNotGivenException("username");
+		}
+		if (userdto.getPassword() == null || userdto.getPassword().isEmpty()) {
+			throw new RequiredFieldNotGivenException("password");
+		}
+		if (userdto.getEmail() == null || userdto.getEmail().isEmpty()) {
+			throw new RequiredFieldNotGivenException("email");
+		}
+
+		// Check if already exists
 		if (userRepository.findOneByUsernameOrEmail(userdto.getUsername(), userdto.getEmail()).isPresent()) {
 			// Exists one
 			throw new AlreadyExistsException(UserDto.class);
 
 		}
-		Set<Role> defaultroles = new HashSet<Role>(Arrays
-				.asList(new Role(DEFAULT_ROLE, new HashSet<Permission>(Arrays.asList(new Permission(ROLE_PREFIX+DEFAULT_ROLE))))));
-		User newuser = modelMapper.map(userdto, User.class);
-		newuser.setRoles(defaultroles);
+		// Set default roles
+		Set<Role> defaultroles = new HashSet<Role>(Arrays.asList(new Role(DEFAULT_ROLE,
+				new HashSet<Permission>(Arrays.asList(new Permission(ROLE_PREFIX + DEFAULT_ROLE))))));
+
+		User newuser = new User(userdto.getUsername(), userdto.getPassword(), defaultroles);
 		userRepository.save(newuser);
+
 		return userdto;
 	}
 
 	@Override
-	public UserDto createUserIfNotExists(UserDto userdto, Set<RoleDto> rolesdto) throws AlreadyExistsException {
+	public UserDto createUserIfNotExists(UserDto userdto, Set<RoleDto> rolesdto)
+			throws AlreadyExistsException, RequiredFieldNotGivenException {
 
+		// Check if DTO has required fields
+		if (userdto.getUsername() == null || userdto.getUsername().isEmpty()) {
+			throw new RequiredFieldNotGivenException("username");
+		}
+		if (userdto.getPassword() == null || userdto.getPassword().isEmpty()) {
+			throw new RequiredFieldNotGivenException("password");
+		}
+		if (userdto.getEmail() == null || userdto.getEmail().isEmpty()) {
+			throw new RequiredFieldNotGivenException("email");
+		}
+
+		// Check if already exists
 		if (userRepository.findOneByUsernameOrEmail(userdto.getUsername(), userdto.getEmail()).isPresent()) {
 			// Exists one
 			throw new AlreadyExistsException(UserDto.class);
 
 		}
-		User newuser = modelMapper.map(userdto, User.class);
+		// Add passed roles
 		Set<Role> roles = new HashSet<Role>();
 		for (RoleDto rdto : rolesdto) {
-			roles.add(modelMapper.map(rdto, Role.class));
+			roles.add(new Role(rdto.getName()));
 		}
-		newuser.setRoles(roles);
+
+		// Save user
+		User newuser = new User(userdto.getUsername(), userdto.getPassword(), roles);
 
 		userRepository.save(newuser);
 		return userdto;
 	}
 
 	@Override
-	public RoleDto createRoleIfNotExists(RoleDto roledto) throws AlreadyExistsException {
+	public RoleDto createRoleIfNotExists(RoleDto roledto)
+			throws AlreadyExistsException, RequiredFieldNotGivenException {
+
+		// Check if DTO has required fields
+		if (roledto.getName() == null || roledto.getName().isEmpty()) {
+			throw new RequiredFieldNotGivenException("rolename");
+		}
+
+		// Check if already exists
 		if (roleRepository.findOneByName(roledto.getName()).isPresent()) {
 			throw new AlreadyExistsException(RoleDto.class);
 		}
 
+		// Add void wrapper of permissions
 		Set<Permission> defaultpermissions = new HashSet<Permission>();
 		Role newrole = modelMapper.map(roledto, Role.class);
 		newrole.setPermissions(defaultpermissions);
+
+		// Save role
 		roleRepository.save(newrole);
 		return roledto;
 	}
 
 	@Override
 	public RoleDto createRoleIfNotExists(RoleDto roledto, Set<PermissionDto> permissionsdto)
-			throws AlreadyExistsException {
+			throws AlreadyExistsException, RequiredFieldNotGivenException {
+
+		// Check if DTO has required fields
+		if (roledto.getName() == null || roledto.getName().isEmpty()) {
+			throw new RequiredFieldNotGivenException("rolename");
+		}
+		// Check if already exists
 		if (roleRepository.findOneByName(roledto.getName()).isPresent()) {
 			throw new AlreadyExistsException(RoleDto.class);
 		}
+
+		// Add passed permissions
 		Role newrole = modelMapper.map(roledto, Role.class);
 		Set<Permission> permissions = new HashSet<Permission>();
 		for (PermissionDto pdto : permissionsdto) {
-			// createPermissionIfNotExists(pdto);
+
 			permissions.add(modelMapper.map(pdto, Permission.class));
 		}
 		newrole.setPermissions(permissions);
+
+		// Save role
 		roleRepository.save(newrole);
 		return roledto;
 	}
 
 	@Override
 	public PermissionDto createPermissionIfNotExists(PermissionDto permissiondto) throws AlreadyExistsException {
+		
+		// Check if DTO has required fields
 		if (permissionRepository.findOneByName(permissiondto.getName()).isPresent()) {
 			throw new AlreadyExistsException(PermissionDto.class);
 		}
+		// Check if already exists
+		if (roleRepository.findOneByName(permissiondto.getName()).isPresent()) {
+			throw new AlreadyExistsException(PermissionDto.class);
+			}
+		
+		//Save permission
 		roleRepository.save(modelMapper.map(permissiondto, Role.class));
 		return permissiondto;
+	}
+
+	@Override
+	public List<UserDto> listAllUsers() {
+
+		return userRepository.findAll().stream().map(user -> modelMapper.map(user, UserDto.class))
+				.collect(Collectors.toList());
 	}
 
 }

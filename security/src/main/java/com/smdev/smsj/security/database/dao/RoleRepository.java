@@ -13,7 +13,7 @@ import com.smdev.smsj.security.database.entities.Role;
  * |> RoleRepository ~~ [com.smdev.smsj.security.database.dao]
  * 
  */
-@Repository("roleRepository")
+@Repository("RoleRepository")
 public interface RoleRepository extends JpaRepository<Role, String>{
 	Optional<Role> findOneByName(String name);
 }

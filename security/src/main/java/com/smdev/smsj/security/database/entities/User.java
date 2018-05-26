@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.smdev.common.database.AbstractEntityClass;
 
@@ -24,12 +25,15 @@ import lombok.Setter;
  * 
  */
 @Entity(name = "USER")
-@Table(name = "users")
+@Table(name = "users" ,uniqueConstraints={
+	    @UniqueConstraint(columnNames = {"username", "email"})
+	}) 
+//@Table(name="users")
 public class User extends AbstractEntityClass {
 
 	@Getter
 	@Setter
-	@Column(name = "username", nullable = false, unique = true)
+	@Column(name = "username", nullable = false,  unique = true)
 	private String username;
 
 	@Getter
@@ -52,15 +56,20 @@ public class User extends AbstractEntityClass {
 	}
 	
 	public User(String username, String password) {
-		this.username = username;
-		this.password = password;
-		this.roles = new HashSet<Role>();
+	
+		this(username, password, new HashSet<Role>());
 	}
 
 	public User(String username, String password, Set<Role> roles) {
+		
+		this(username, password, roles, "");
+	}
+	public User(String username, String password, Set<Role> roles, String email) {
 		this.username = username;
 		this.password = password;
 		this.roles = roles;
+		this.email = email;
 	}
+	
 
 }

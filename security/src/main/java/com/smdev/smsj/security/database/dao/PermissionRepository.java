@@ -13,7 +13,7 @@ import com.smdev.smsj.security.database.entities.Permission;
  * |> PermissionRepository ~~ [com.smdev.smsj.security.database.dao]
  * 
  */
-@Repository("permissionRepository")
+@Repository("PermissionRepository")
 public interface PermissionRepository extends JpaRepository<Permission, String> {
 	Optional<Permission> findOneByName(String name);
 }
